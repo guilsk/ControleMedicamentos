@@ -1,8 +1,10 @@
-﻿using ControleMedicamentos.ModuloFuncionario;
+﻿using ControleMedicamentos.Compartilhado;
+using ControleMedicamentos.ModuloFuncionario;
 using ControleMedicamentos.ModuloMedicamento;
 using ControleMedicamentos.ModuloPaciente;
 using ControleMedicamentos.ModuloRequisicao;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ControleMedicamentos.ModuloRequisicao
 {
-    internal class TelaRequisicao
+    public class TelaRequisicao : TelaBase
     {
         RepositorioRequisicao repositorioRequisicao;
         RepositorioMedicamento repositorioMedicamento;
@@ -29,89 +31,61 @@ namespace ControleMedicamentos.ModuloRequisicao
             this.telaPaciente = telaPaciente;
             this.repositorioFuncionario = repositorioFuncionario;
             this.telaFuncionario = telaFuncionario;
+            this.repositorioBase = repositorioRequisicao;
+            this.nomeEntidade = "Requisição";
         }
-
-        public void Menu()
+        public override string ApresentarMenu()
         {
             Console.Clear();
-            Console.WriteLine("---------------------------------------------");
-            Console.WriteLine("0 - Sair");
-            Console.WriteLine("1 - Cadastrar");
-            Console.WriteLine("2 - Visualizar Histórico");
-            Console.WriteLine("\nSelecione a operação: ");
-            int x = Convert.ToInt32(Console.ReadLine());
-            if (x != 0 && x != 1 && x != 2)
-            {
-                Console.WriteLine("Operação inválida!");
-                Console.ReadLine();
-                Menu();
-            }
-            if (x == 0)
-            {
-                return;
-            }
-            EscolherOperacao(x);
+
+            Console.WriteLine($"Cadastro de {nomeEntidade}s \n");
+
+            Console.WriteLine($"1 - Inserir {nomeEntidade}");
+            Console.WriteLine($"2 - Visualizar Requisições");
+
+            Console.WriteLine("Digite s para Sair");
+
+            string opcao = Console.ReadLine();
+
+            return opcao;
         }
 
-        public void EscolherOperacao(int x)
-        {
-            Console.Clear();
-            if (x == 1)
-            {
-                Cadastrar();
-                Console.ReadLine();
-            }
-            else if (x == 2)
-            {
-                Visualizar();
-                Console.ReadLine();
-            }
-            Menu();
-        }
-
-        public void Cadastrar()
+        protected override EntidadeBase ObterRegistro()
         {
             Console.Write("Digite o título da requisição: ");
             string titulo = Console.ReadLine();
 
-            telaPaciente.Visualizar();
+            telaPaciente.VisualizarRegistros(false);
             Console.Write("Digite o ID do paciente: ");
             int id = Convert.ToInt32(Console.ReadLine());
             Paciente paciente = repositorioPaciente.SelecionarPorId(id);
 
 
-            telaFuncionario.Visualizar();
+            telaFuncionario.VisualizarRegistros(false);
             Console.Write("Digite o ID do Funcionário: ");
-            int id3 = Convert.ToInt32(Console.ReadLine());
-            Funcionario funcionario = repositorioFuncionario.SelecionarPorId(id3);
+            id = Convert.ToInt32(Console.ReadLine());
+            Funcionario funcionario = repositorioFuncionario.SelecionarPorId(id);
            
-            telaMedicamento.Visualizar();
+            telaMedicamento.VisualizarRegistros(false);
             Console.Write("Digite o ID do Medicamento: ");
-            int id2 = Convert.ToInt32(Console.ReadLine());
-            Medicamento medicamento = repositorioMedicamento.SelecionarPorId(id2);
+            id = Convert.ToInt32(Console.ReadLine());
+            Medicamento medicamento = repositorioMedicamento.SelecionarPorId(id);
 
             Console.Write("Digite a quantidade do Medicamento: ");
             int quantidade = Convert.ToInt32(Console.ReadLine());
             medicamento.quantidade -= quantidade;
 
             Requisicao requisicao = new(titulo, funcionario, paciente, medicamento, quantidade);
-            repositorioRequisicao.Inserir(requisicao);
-            Console.WriteLine("Requisição concluída com sucesso!");
+
+            return requisicao;
         }
 
-        public void Visualizar()
+        protected override void MostrarTabela(ArrayList requisicoes)
         {
-            if (repositorioRequisicao.historicoRequisicao.Count != 0)
+            Console.WriteLine("ID | {0, -15} | {1, -15} | {2, -15} | {3, -15} | {4, -15}", "Título", "Funcionário", "Paciente", "Medicamento", "Quantidade");
+            foreach (Requisicao requisicao in requisicoes)
             {
-                Console.WriteLine("ID | {0, -15} | {1, -15} | {2, -15} | {3, -15} | {4, -15}", "Título", "Funcionário", "Paciente", "Medicamento", "Quantidade");
-                foreach (Requisicao requisicao in repositorioRequisicao.historicoRequisicao)
-                {
-                    Console.WriteLine($"{requisicao.id,-2} | {requisicao.titulo,-15} | {requisicao.funcionario.nome,-15} | {requisicao.paciente.nome,-15} | {requisicao.medicamento.nome,-15} | {requisicao.quantidade}");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Nenhuma requisicao encontrada!");
+                Console.WriteLine($"{requisicao.id,-2} | {requisicao.titulo,-15} | {requisicao.funcionario.nome,-15} | {requisicao.paciente.nome,-15} | {requisicao.medicamento.nome,-15} | {requisicao.quantidade}");
             }
         }
     }

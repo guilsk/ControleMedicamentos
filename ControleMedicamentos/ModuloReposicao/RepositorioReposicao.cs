@@ -1,4 +1,5 @@
-﻿using ControleMedicamentos.ModuloMedicamento;
+﻿using ControleMedicamentos.Compartilhado;
+using ControleMedicamentos.ModuloMedicamento;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,22 +9,16 @@ using System.Threading.Tasks;
 
 namespace ControleMedicamentos.ModuloReposicao
 {
-    internal class RepositorioReposicao
+    public class RepositorioReposicao : RepositorioBase
     {
-        public int contadorId = 1;
-        public ArrayList historicoReposicao;
-
-        public RepositorioReposicao(ArrayList historicoReposicao) 
+        public RepositorioReposicao(ArrayList lista) 
         {
-            this.historicoReposicao = historicoReposicao; 
+            listaRegistros = lista; 
         }
 
-        public void Inserir(Reposicao reposicao)
+        public override Reposicao SelecionarPorId(int id)
         {
-            reposicao.id = contadorId;
-            historicoReposicao.Add(reposicao);
-            contadorId++;
+            return (Reposicao)base.SelecionarPorId(id);
         }
-
     }
 }

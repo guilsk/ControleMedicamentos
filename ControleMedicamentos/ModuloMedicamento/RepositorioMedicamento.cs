@@ -1,4 +1,5 @@
-﻿using ControleMedicamentos.ModuloMedicamento;
+﻿using ControleMedicamentos.Compartilhado;
+using ControleMedicamentos.ModuloMedicamento;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,45 +9,16 @@ using System.Threading.Tasks;
 
 namespace ControleMedicamentos.ModuloMedicamento
 {
-    internal class RepositorioMedicamento
+    public class RepositorioMedicamento : RepositorioBase
     {
-        public int contadorId = 1;
-        public ArrayList listaMedicamento;
-
-        public RepositorioMedicamento(ArrayList listaMedicamentos)
+        public RepositorioMedicamento(ArrayList lista)
         {
-            this.listaMedicamento = listaMedicamentos;
+            listaRegistros = lista;
         }
 
-        public void Inserir(Medicamento medicamento)
+        public override Medicamento SelecionarPorId(int id)
         {
-            medicamento.id = contadorId;
-            listaMedicamento.Add(medicamento);
-            contadorId++;
-        }
-
-        public Medicamento SelecionarPorId(int id)
-        {
-            Medicamento m = null;
-            foreach (Medicamento medicamento in listaMedicamento)
-                if (medicamento.id == id)
-                    return medicamento;
-            return m;
-        }
-
-        public void Editar(Medicamento medicamento, int id)
-        {
-            Medicamento m = SelecionarPorId(id);
-            m.nome = medicamento.nome;
-            m.descricao = medicamento.descricao;
-            m.quantidade = medicamento.quantidade;
-            m.fornecedor =  medicamento.fornecedor;
-        }
-
-        public void Excluir(int id)
-        {
-            Medicamento medicamento = SelecionarPorId(id);
-            listaMedicamento.Remove(medicamento);
+            return (Medicamento)base.SelecionarPorId(id);
         }
     }
 }

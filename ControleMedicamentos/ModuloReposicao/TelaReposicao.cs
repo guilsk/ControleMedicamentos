@@ -1,7 +1,9 @@
-﻿using ControleMedicamentos.ModuloFornecedor;
+﻿using ControleMedicamentos.Compartilhado;
+using ControleMedicamentos.ModuloFornecedor;
 using ControleMedicamentos.ModuloFuncionario;
 using ControleMedicamentos.ModuloMedicamento;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ControleMedicamentos.ModuloReposicao
 {
-    internal class TelaReposicao
+    public class TelaReposicao : TelaBase
     {
         RepositorioReposicao repositorioReposicao;
         RepositorioMedicamento repositorioMedicamento;
@@ -24,49 +26,29 @@ namespace ControleMedicamentos.ModuloReposicao
             this.telaMedicamento = telaMedicamento;
             this.repositorioFuncionario = repositorioFuncionario;
             this.telaFuncionario = telaFuncionario;
+            this.repositorioBase = repositorioReposicao;
+            this.nomeEntidade = "Reposiçao";
         }
 
-        public void Menu()
+        public override string ApresentarMenu()
         {
             Console.Clear();
-            Console.WriteLine("---------------------------------------------");
-            Console.WriteLine("0 - Sair");
-            Console.WriteLine("1 - Cadastrar");
-            Console.WriteLine("2 - Visualizar Histórico");
-            Console.WriteLine("\nSelecione a operação: ");
-            int x = Convert.ToInt32(Console.ReadLine());
-            if (x != 0 && x != 1 && x != 2)
-            {
-                Console.WriteLine("Operação inválida!");
-                Console.ReadLine();
-                Menu();
-            }
-            if (x == 0)
-            {
-                return;
-            }
-            EscolherOperacao(x);
+
+            Console.WriteLine($"Cadastro de {nomeEntidade}s \n");
+
+            Console.WriteLine($"1 - Inserir {nomeEntidade}");
+            Console.WriteLine($"2 - Visualizar Reposições");
+
+            Console.WriteLine("Digite s para Sair");
+
+            string opcao = Console.ReadLine();
+
+            return opcao;
         }
 
-        public void EscolherOperacao(int x)
+        protected override EntidadeBase ObterRegistro()
         {
-            Console.Clear();
-            if (x == 1)
-            {
-                Cadastrar();
-                Console.ReadLine();
-            }
-            else if (x == 2)
-            {
-                Visualizar();
-                Console.ReadLine();
-            }
-            Menu();
-        }
-
-        public void Cadastrar()
-        {
-            telaMedicamento.Visualizar();
+            telaMedicamento.VisualizarRegistros(false);
             Console.Write("Digite o ID do medicamento: ");
             int id = Convert.ToInt32(Console.ReadLine());
             Medicamento medicamento = repositorioMedicamento.SelecionarPorId(id);
@@ -75,32 +57,23 @@ namespace ControleMedicamentos.ModuloReposicao
             int quantidade = Convert.ToInt32(Console.ReadLine());
             medicamento.quantidade += quantidade;
             
-            telaFuncionario.Visualizar();
+            telaFuncionario.VisualizarRegistros(false);
             Console.Write("Digite o ID do funcionário: ");
-            int id2 = Convert.ToInt32(Console.ReadLine());
-            Funcionario funcionario = repositorioFuncionario.SelecionarPorId(id2);
+            id = Convert.ToInt32(Console.ReadLine());
+            Funcionario funcionario = repositorioFuncionario.SelecionarPorId(id);
 
             Reposicao reposicao = new(medicamento, quantidade, funcionario);
-            repositorioReposicao.Inserir(reposicao);
-            Console.WriteLine("Reposição concluída com sucesso!");
+
+            return reposicao;
         }
 
-        public void Visualizar()
+        protected override void MostrarTabela(ArrayList reposicoes)
         {
-            if (repositorioReposicao.historicoReposicao.Count != 0)
+            Console.WriteLine("ID | {0, -15} | {1, -15} | {2, -15} | {3, -15}", "Medicamento", "Quantidade", "Funcionário", "Fornecedor");
+            foreach (Reposicao reposicao in reposicoes)
             {
-                Console.WriteLine("ID | {0, -15} | {1, -15} | {2, -15} | {3, -15}", "Medicamento", "Quantidade", "Funcionário", "Fornecedor");
-                foreach (Reposicao reposicao in repositorioReposicao.historicoReposicao)
-                {
-                    Console.WriteLine($"{reposicao.id,-2} | {reposicao.medicamento.nome,-15} | {reposicao.quantidade,-15} | {reposicao.funcionario.nome,-15} | {reposicao.medicamento.fornecedor.nome,-15}");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Nenhuma reposição encontrada!");
+                Console.WriteLine($"{reposicao.id,-2} | {reposicao.medicamento.nome,-15} | {reposicao.quantidade,-15} | {reposicao.funcionario.nome,-15} | {reposicao.medicamento.fornecedor.nome,-15}");
             }
         }
-
-
     }
 }

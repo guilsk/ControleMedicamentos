@@ -1,4 +1,5 @@
-﻿using ControleMedicamentos.ModuloFuncionario;
+﻿using ControleMedicamentos.Compartilhado;
+using ControleMedicamentos.ModuloFuncionario;
 using ControleMedicamentos.ModuloMedicamento;
 using ControleMedicamentos.ModuloPaciente;
 using System;
@@ -9,14 +10,13 @@ using System.Threading.Tasks;
 
 namespace ControleMedicamentos.ModuloRequisicao
 {
-    internal class Requisicao
+    public class Requisicao : EntidadeBase
     {
         public string titulo;
         public Funcionario funcionario;
         public Paciente paciente;
         public Medicamento medicamento;
         public int quantidade;
-        public int id;
 
         public Requisicao(string titulo, Funcionario funcionario, Paciente paciente, Medicamento medicamento, int quantidade)
         {
@@ -25,6 +25,18 @@ namespace ControleMedicamentos.ModuloRequisicao
             this.paciente = paciente;
             this.medicamento = medicamento;
             this.quantidade = quantidade;
+        }
+
+        public override void AtualizarInformacoes(EntidadeBase registroAtualizado)
+        {
+            Requisicao requisicaoAtualizado = (Requisicao)registroAtualizado;
+            
+            this.titulo = requisicaoAtualizado.titulo;
+            this.funcionario = requisicaoAtualizado.funcionario;
+            this.paciente = requisicaoAtualizado.paciente;
+            this.medicamento = requisicaoAtualizado.medicamento;
+            this.quantidade = requisicaoAtualizado.quantidade;
+
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ControleMedicamentos.Compartilhado;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,43 +8,16 @@ using System.Threading.Tasks;
 
 namespace ControleMedicamentos.ModuloFuncionario
 {
-    internal class RepositorioFuncionario
+    public class RepositorioFuncionario : RepositorioBase
     {
-        public int contadorId = 1;
-        public ArrayList listaFuncionario;
-
-        public RepositorioFuncionario(ArrayList listaFuncionario)
+        public RepositorioFuncionario(ArrayList lista)
         {
-            this.listaFuncionario = listaFuncionario;
+            listaRegistros = lista;
         }
 
-        public void Inserir(Funcionario funcionario)
+        public override Funcionario SelecionarPorId(int id)
         {
-            funcionario.id = contadorId;
-            listaFuncionario.Add(funcionario);
-            contadorId++;
-        }
-
-        public Funcionario SelecionarPorId(int id)
-        {
-            Funcionario f = null;
-            foreach (Funcionario funcionario in listaFuncionario)
-                if (funcionario.id == id)
-                    return funcionario;
-            return f;
-        }
-
-        public void Editar(Funcionario funcionario, int id)
-        {
-            Funcionario f = SelecionarPorId(id);
-            f.nome = funcionario.nome;
-            f.telefone = funcionario.telefone;
-        }
-
-        public void Excluir(int id)
-        {
-            Funcionario funcionario = SelecionarPorId(id);
-            listaFuncionario.Remove(funcionario);
+            return (Funcionario)base.SelecionarPorId(id);
         }
     }
 }
